@@ -65,7 +65,7 @@ The rest of the lines, you need to respect this structure:
 
 * First column: {number number character} (coordinates from rover)
 
-* second column: {character} (instruction)
+* Second column: {character} (instruction)
 
 
 
