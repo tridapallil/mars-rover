@@ -41,9 +41,13 @@ All the output is printed at the console, this way:
 ```
 
 To run the project, you just need to:
+
 1 - clone the project
+
 2 - run: ```yarn``` or ```npm i```
+
 3 - run: ```yarn start``` or ```npm run start```
+
 4 - To run tests: ```yarn test``` or ```npm run test```
 
 There is a file called rovers.csv, which is the file where have all the input data. The scructure is very simple. There are 3 columns.
