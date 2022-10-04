@@ -1,27 +1,30 @@
 import { getNextDirection, getPreviousDirection, isValidDirection } from './directions.service';
+import { isValidPosition, isOutsideFromPlateau } from './plateau.service';
 
-const isMissingRequiredFields = (object) => !object?.x || !object?.y || !object.face;
+const ROTATE_INSTRUCTIONS = ['L', 'R'];
+const MOVE_INSTRUCTIONS = ['M'];
+const VALID_INSTRUCTIONS = [...ROTATE_INSTRUCTIONS, ...MOVE_INSTRUCTIONS];
 
-const isAValidPosition = (position) => Number.isNaN(position) || !Number.isInteger(position) || position < 0;
+const isMissingRequiredFields = (object) => !object?.x || !object?.y || !object.facing;
 
-const validateRover = (object) => {
+const validateRoverPosition = (object) => {
   if (isMissingRequiredFields(object)) {
     throw new Error('Missing Fields');
   }
-  if (!isValidDirection(object.face)) {
-    throw new Error('Invalid face');
+  if (!isValidDirection(object.facing)) {
+    throw new Error('Invalid facing');
   }
-  if (!isAValidPosition(object?.x)) {
+  if (!isValidPosition(object)) {
     throw new Error('Invalid x position');
   }
-  if (isAValidPosition(object?.y)) {
+  if (!isValidPosition(object)) {
     throw new Error('Invalid y position');
   }
 };
 
 export const moveForward = (rover) => {
   const newRover = rover;
-  switch (newRover.face) {
+  switch (newRover.facing) {
     case 'N':
       newRover.y += 1;
       break;
@@ -37,18 +40,21 @@ export const moveForward = (rover) => {
     default:
       break;
   }
+  if (isOutsideFromPlateau(newRover)) {
+    throw new Error('Invalid move, outsite from plateau');
+  }
   return newRover;
 };
 
 const rotateLeft = (rover) => {
   const newRover = rover;
-  newRover.face = getPreviousDirection(newRover.face);
+  newRover.facing = getPreviousDirection(newRover.facing);
   return newRover;
 };
 
 const rotateRight = (rover) => {
   const newRover = rover;
-  newRover.face = getNextDirection(newRover.face);
+  newRover.facing = getNextDirection(newRover.facing);
   return newRover;
 };
 
@@ -60,29 +66,44 @@ export const rotate = (rover, direction) => {
   return directionHandler[direction](rover);
 };
 
-const doInstruction = (instruction) => {
-  if (['L', 'R'].includes(instruction)) {
-    return rotate(instruction);
+const doInstruction = (finalRoverPosition, instruction) => {
+  if (!VALID_INSTRUCTIONS.includes(instruction)) {
+    throw new Error('Invalid instruction');
   }
-  return moveForward(instruction);
+  if (ROTATE_INSTRUCTIONS.includes(instruction)) {
+    return rotate(finalRoverPosition, instruction);
+  }
+  return moveForward(finalRoverPosition);
 };
 
 const proccessInstructions = (rover, instructions) => {
   const individualInstructions = instructions.split('');
   let finalRoverPosition = rover;
   individualInstructions.forEach((instruction) => {
-    finalRoverPosition = doInstruction(instruction);
+    finalRoverPosition = doInstruction(finalRoverPosition, instruction);
   });
   return finalRoverPosition;
 };
 
+const formatRoverPosition = (string) => {
+  const [x, y, facing] = string.split(' ');
+  return { x: parseInt(x, 10), y: parseInt(y, 10), facing };
+};
+
 export const runRover = ({ coordinates, instructions }) => {
-  validateRover(coordinates);
-  proccessInstructions(coordinates, instructions);
+  try {
+    const rover = formatRoverPosition(coordinates);
+    validateRoverPosition(rover);
+    const finalRoverPosition = proccessInstructions(rover, instructions);
+    return finalRoverPosition;
+  } catch (error) {
+    console.error(`Rover ${coordinates} - ${instructions} -> ${error.message}`);
+    return error;
+  }
 };
 
 export default {
-  validateRover,
+  validateRoverPosition,
   rotate,
   moveForward,
 };

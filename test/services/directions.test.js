@@ -6,6 +6,7 @@ describe('Test directions service', () => {
 
     expect(nextDirection).toBe('E');
   });
+
   test('Tests if will 90 degree negative', () => {
     const previousDirection = getPreviousDirection('S');
 
