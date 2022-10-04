@@ -60,7 +60,7 @@ export const validatePlateau = (plateau) => {
  * @returns {boolean}
  */
 export const formatAndValidatePlateau = (plateau) => {
-  const [x, y] = plateau.trim().split(' ');
+  const [x, y] = plateau.replace(/\s/g, '').split('');
   const formatedPlateau = { x: parseInt(x, 10), y: parseInt(y, 10) };
   validatePlateau(formatedPlateau);
   return formatedPlateau;

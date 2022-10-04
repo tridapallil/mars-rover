@@ -1,5 +1,5 @@
 coordinates;instructions;plateau
 ;;4 5
-1 2 N;LMLMLMLMM;
-3 3 E;MRRMMRMRRM;
-3 3 E;MRRMMRMRRZ;
+1 2 N;LMLMLMLMM
+3 3 E;MRRMMRMRRM
+3 3 E;MRRMMRMRRZ

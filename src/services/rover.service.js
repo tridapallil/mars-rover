@@ -93,7 +93,7 @@ const processInstructions = (rover, instructions, plateau) => {
 };
 
 export const formatRoverPosition = (string) => {
-  const [x, y, heading] = string.trim().split(' ');
+  const [x, y, heading] = string.replace(/\s/g, '').split('');
   return { x: parseInt(x, 10), y: parseInt(y, 10), heading };
 };
 
