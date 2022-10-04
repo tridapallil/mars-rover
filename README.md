@@ -51,16 +51,20 @@ To run the project, you just need to:
 4 - To run tests: ```yarn test``` or ```npm run test```
 
 There is a file called rovers.csv, which is the file where have all the input data. The scructure is very simple. There are 3 columns.
-The first line will always be used to get the plateau information (x y), the rest of the lines will always be the rovers.
-You can edit with any input you want, respcting the example structure. 
+The first line is the header, and the second will always be used to get the plateau information (x y), the rest of the lines will always be the rovers.
+You can edit with any input you want, following the example structure below:
+
 ```
 coordinates;instructions;plateau
 ;;4 5
 1 2 N;LMLMLMLMM;
 ```
+
 In the fist line, after the header, you need to put the value from plateau, respecting: {number number}
 The rest of the lines, you need to respect this structure:
+
 * First column: {number number character} (coordinates from rover)
+
 * second column: {character} (instruction)
 
 
