@@ -57,7 +57,7 @@ You can edit with any input you want, following the example structure below:
 ```
 coordinates;instructions;plateau
 ;;4 5
-1 2 N;LMLMLMLMM;
+1 2 N;LMLMLMLMM
 ```
 
 In the fist line, after the header, you need to put the value from plateau, respecting: {number number}
