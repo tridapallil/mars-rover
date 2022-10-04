@@ -1,5 +1,6 @@
 import { getNextDirection, getPreviousDirection, isValidDirection } from './directions.service';
 import { isValidPosition, isOutsideFromPlateau } from './plateau.service';
+import ValidationError from '../classes/ValidationError';
 
 const ROTATE_INSTRUCTIONS = ['L', 'R'];
 const MOVE_INSTRUCTIONS = ['M'];
@@ -9,16 +10,16 @@ const isMissingRequiredFields = (object) => !object?.x || !object?.y || !object.
 
 const validateRoverPosition = (object) => {
   if (isMissingRequiredFields(object)) {
-    throw new Error('Missing Fields');
+    throw new ValidationError('Missing Fields');
   }
   if (!isValidDirection(object.facing)) {
-    throw new Error('Invalid facing');
+    throw new ValidationError('Invalid facing');
   }
   if (!isValidPosition(object)) {
-    throw new Error('Invalid x position');
+    throw new ValidationError('Invalid x position');
   }
   if (!isValidPosition(object)) {
-    throw new Error('Invalid y position');
+    throw new ValidationError('Invalid y position');
   }
 };
 
@@ -41,7 +42,7 @@ export const moveForward = (rover) => {
       break;
   }
   if (isOutsideFromPlateau(newRover)) {
-    throw new Error('Invalid move, outsite from plateau');
+    throw new ValidationError('Invalid move, outsite from plateau');
   }
   return newRover;
 };
@@ -68,7 +69,7 @@ export const rotate = (rover, direction) => {
 
 const doInstruction = (finalRoverPosition, instruction) => {
   if (!VALID_INSTRUCTIONS.includes(instruction)) {
-    throw new Error('Invalid instruction');
+    throw new ValidationError('Invalid instruction');
   }
   if (ROTATE_INSTRUCTIONS.includes(instruction)) {
     return rotate(finalRoverPosition, instruction);
@@ -76,7 +77,7 @@ const doInstruction = (finalRoverPosition, instruction) => {
   return moveForward(finalRoverPosition);
 };
 
-const proccessInstructions = (rover, instructions) => {
+const processInstructions = (rover, instructions) => {
   const individualInstructions = instructions.split('');
   let finalRoverPosition = rover;
   individualInstructions.forEach((instruction) => {
@@ -90,15 +91,23 @@ const formatRoverPosition = (string) => {
   return { x: parseInt(x, 10), y: parseInt(y, 10), facing };
 };
 
+const buildReturnObject = (referenceRover, instructions, result) => ({
+  referenceRover,
+  instructions,
+  result,
+});
+
 export const runRover = ({ coordinates, instructions }) => {
   try {
     const rover = formatRoverPosition(coordinates);
     validateRoverPosition(rover);
-    const finalRoverPosition = proccessInstructions(rover, instructions);
-    return finalRoverPosition;
+    const finalRoverPosition = processInstructions(rover, instructions);
+    return buildReturnObject(coordinates, instructions, finalRoverPosition);
   } catch (error) {
-    console.error(`Rover ${coordinates} - ${instructions} -> ${error.message}`);
-    return error;
+    if (error instanceof ValidationError) {
+      return buildReturnObject(coordinates, instructions, error.message);
+    }
+    return buildReturnObject(coordinates, instructions, 'Internal Error');
   }
 };
 
