@@ -7,7 +7,7 @@ In order to control a rover , NASA sends a simple string of letters. The possibl
 Assume that the square directly North from (x, y) is (x, y 1).
 
 # Solution and Techs
-To solve this problema, was develop a structure and code thinking on clean code, using little methods to do little things and make easier to test and read.
+To solve this problem, was develop a structure and code thinking on clean code, using little methods to do little things and make easier to test and read.
 
 It was used some techs to be easier to develop and use. One example is to use csv file to input the data (easier than input data on console).
 
