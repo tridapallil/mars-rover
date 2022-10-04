@@ -1,14 +1,20 @@
+import { isEmpty } from 'lodash';
 import { getNextDirection, getPreviousDirection, isValidDirection } from './directions.service';
-import { isRoverPositionValid, isOutsideFromPlateau, formatAndValidatePlateau } from './plateau.service';
+import { isRoverPositionValid, isOutsideFromPlateau } from './plateau.service';
 import ValidationError from '../classes/ValidationError';
 
 const ROTATE_INSTRUCTIONS = ['L', 'R'];
 const MOVE_INSTRUCTIONS = ['M'];
 const VALID_INSTRUCTIONS = [...ROTATE_INSTRUCTIONS, ...MOVE_INSTRUCTIONS];
 
-const isMissingRequiredFields = (object) => !object?.x || !object?.y || !object.heading;
+export const isMissingRequiredFields = (object) => {
+  const requiredFields = ['x', 'y', 'heading'];
+  const keys = Object.keys(object);
+  const missingKeys = requiredFields.filter((missingKey) => !keys.includes(missingKey));
+  return !isEmpty(missingKeys);
+};
 
-const validateRoverPosition = (object) => {
+export const validateRoverPosition = (object) => {
   if (isMissingRequiredFields(object)) {
     throw new ValidationError('Missing Fields');
   }
@@ -16,10 +22,10 @@ const validateRoverPosition = (object) => {
     throw new ValidationError('Invalid heading');
   }
   if (!isRoverPositionValid(object)) {
-    throw new ValidationError('Invalid x position');
+    throw new ValidationError('Invalid x or y position');
   }
-  if (!isRoverPositionValid(object)) {
-    throw new ValidationError('Invalid y position');
+  if (isOutsideFromPlateau(object)) {
+    throw new ValidationError('Rover landed outside from plateau');
   }
 };
 
@@ -47,13 +53,13 @@ export const moveForward = (rover) => {
   return newRover;
 };
 
-const rotateLeft = (rover) => {
+export const rotateLeft = (rover) => {
   const newRover = rover;
   newRover.heading = getPreviousDirection(newRover.heading);
   return newRover;
 };
 
-const rotateRight = (rover) => {
+export const rotateRight = (rover) => {
   const newRover = rover;
   newRover.heading = getNextDirection(newRover.heading);
   return newRover;
@@ -67,7 +73,7 @@ export const rotate = (rover, direction) => {
   return directionHandler[direction](rover);
 };
 
-const doInstruction = (finalRoverPosition, instruction) => {
+export const doInstruction = (finalRoverPosition, instruction) => {
   if (!VALID_INSTRUCTIONS.includes(instruction)) {
     throw new ValidationError('Invalid instruction');
   }
@@ -77,16 +83,16 @@ const doInstruction = (finalRoverPosition, instruction) => {
   return moveForward(finalRoverPosition);
 };
 
-const processInstructions = (rover, instructions) => {
+const processInstructions = (rover, instructions, plateau) => {
   const individualInstructions = instructions.trim().split('');
   let finalRoverPosition = rover;
   individualInstructions.forEach((instruction) => {
-    finalRoverPosition = doInstruction(finalRoverPosition, instruction);
+    finalRoverPosition = doInstruction(finalRoverPosition, instruction, plateau);
   });
   return finalRoverPosition;
 };
 
-const formatRoverPosition = (string) => {
+export const formatRoverPosition = (string) => {
   const [x, y, heading] = string.trim().split(' ');
   return { x: parseInt(x, 10), y: parseInt(y, 10), heading };
 };
@@ -97,7 +103,7 @@ const buildReturnObject = (referenceRover, instructions, result) => ({
   result,
 });
 
-export const runRover = ({ coordinates, instructions }, upperRight) => {
+export const runRover = ({ coordinates, instructions }) => {
   try {
     const rover = formatRoverPosition(coordinates);
     validateRoverPosition(rover);

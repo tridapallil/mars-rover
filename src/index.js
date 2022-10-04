@@ -6,6 +6,7 @@ const init = () => {
   const dataFromCsv = readCsv('./rovers.csv');
   const parsedData = formatData(dataFromCsv);
   const result = navigate(parsedData);
+  console.log(result);
 };
 
 init();

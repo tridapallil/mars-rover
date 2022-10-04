@@ -6,7 +6,7 @@ import ValidationError from '../classes/ValidationError';
  * @returns {boolean}
  */
 // eslint-disable-next-line max-len
-export const isInvalidPosition = (position) => Number.isNaN(position) || !Number.isInteger(position) || position < 0;
+export const isInvalidPosition = (position) => Number.isNaN(position) || !Number.isInteger(position);
 
 /**
  * Validate if the positions from a rover object
@@ -16,7 +16,9 @@ export const isInvalidPosition = (position) => Number.isNaN(position) || !Number
  * @returns {boolean}
  */
 export const isRoverPositionValid = ({ x, y }) => {
-  if (isInvalidPosition(x) || isInvalidPosition(y)) {
+  if (isInvalidPosition(x)
+  || isInvalidPosition(y)
+  ) {
     return false;
   }
   return true;
@@ -29,7 +31,7 @@ export const isRoverPositionValid = ({ x, y }) => {
  * @returns {boolean}
  */
 export const isOutsideFromPlateau = ({ x, y }) => {
-  if (x < 0 || y < 0) {
+  if (x < 0 || y < 0 || x > global.plateau.x || y > global.plateau.y) {
     return true;
   }
   return false;
