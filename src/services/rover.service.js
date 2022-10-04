@@ -78,7 +78,7 @@ const doInstruction = (finalRoverPosition, instruction) => {
 };
 
 const processInstructions = (rover, instructions) => {
-  const individualInstructions = instructions.split('');
+  const individualInstructions = instructions.trim().split('');
   let finalRoverPosition = rover;
   individualInstructions.forEach((instruction) => {
     finalRoverPosition = doInstruction(finalRoverPosition, instruction);
@@ -87,7 +87,7 @@ const processInstructions = (rover, instructions) => {
 };
 
 const formatRoverPosition = (string) => {
-  const [x, y, facing] = string.split(' ');
+  const [x, y, facing] = string.trim().split(' ');
   return { x: parseInt(x, 10), y: parseInt(y, 10), facing };
 };
 
