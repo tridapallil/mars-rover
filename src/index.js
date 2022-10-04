@@ -1,12 +1,11 @@
 import readCsv from './utils/read-csv';
-import { runRover } from './services/rover.service';
-
-const process = (data) => data.map((rover) => runRover(rover));
+import formatData from './utils/format-data';
+import { navigate } from './services/navigate.service';
 
 const init = () => {
-  const rovers = readCsv('./rovers.csv');
-  const result = process(rovers);
-  console.log(result);
+  const dataFromCsv = readCsv('./rovers.csv');
+  const parsedData = formatData(dataFromCsv);
+  const result = navigate(parsedData);
 };
 
 init();

@@ -1,31 +1,31 @@
 import { getNextDirection, getPreviousDirection, isValidDirection } from './directions.service';
-import { isValidPosition, isOutsideFromPlateau } from './plateau.service';
+import { isRoverPositionValid, isOutsideFromPlateau, formatAndValidatePlateau } from './plateau.service';
 import ValidationError from '../classes/ValidationError';
 
 const ROTATE_INSTRUCTIONS = ['L', 'R'];
 const MOVE_INSTRUCTIONS = ['M'];
 const VALID_INSTRUCTIONS = [...ROTATE_INSTRUCTIONS, ...MOVE_INSTRUCTIONS];
 
-const isMissingRequiredFields = (object) => !object?.x || !object?.y || !object.facing;
+const isMissingRequiredFields = (object) => !object?.x || !object?.y || !object.heading;
 
 const validateRoverPosition = (object) => {
   if (isMissingRequiredFields(object)) {
     throw new ValidationError('Missing Fields');
   }
-  if (!isValidDirection(object.facing)) {
-    throw new ValidationError('Invalid facing');
+  if (!isValidDirection(object.heading)) {
+    throw new ValidationError('Invalid heading');
   }
-  if (!isValidPosition(object)) {
+  if (!isRoverPositionValid(object)) {
     throw new ValidationError('Invalid x position');
   }
-  if (!isValidPosition(object)) {
+  if (!isRoverPositionValid(object)) {
     throw new ValidationError('Invalid y position');
   }
 };
 
 export const moveForward = (rover) => {
   const newRover = rover;
-  switch (newRover.facing) {
+  switch (newRover.heading) {
     case 'N':
       newRover.y += 1;
       break;
@@ -49,13 +49,13 @@ export const moveForward = (rover) => {
 
 const rotateLeft = (rover) => {
   const newRover = rover;
-  newRover.facing = getPreviousDirection(newRover.facing);
+  newRover.heading = getPreviousDirection(newRover.heading);
   return newRover;
 };
 
 const rotateRight = (rover) => {
   const newRover = rover;
-  newRover.facing = getNextDirection(newRover.facing);
+  newRover.heading = getNextDirection(newRover.heading);
   return newRover;
 };
 
@@ -87,8 +87,8 @@ const processInstructions = (rover, instructions) => {
 };
 
 const formatRoverPosition = (string) => {
-  const [x, y, facing] = string.trim().split(' ');
-  return { x: parseInt(x, 10), y: parseInt(y, 10), facing };
+  const [x, y, heading] = string.trim().split(' ');
+  return { x: parseInt(x, 10), y: parseInt(y, 10), heading };
 };
 
 const buildReturnObject = (referenceRover, instructions, result) => ({
@@ -97,7 +97,7 @@ const buildReturnObject = (referenceRover, instructions, result) => ({
   result,
 });
 
-export const runRover = ({ coordinates, instructions }) => {
+export const runRover = ({ coordinates, instructions }, upperRight) => {
   try {
     const rover = formatRoverPosition(coordinates);
     validateRoverPosition(rover);

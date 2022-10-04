@@ -1,19 +1,21 @@
+import ValidationError from '../classes/ValidationError';
+
 /**
  * Validate individual position, validating the type and value
  * @param {number} position - individual position from rover
  * @returns {boolean}
  */
 // eslint-disable-next-line max-len
-const isInvalidPosition = (position) => Number.isNaN(position) || !Number.isInteger(position) || position < 0;
+export const isInvalidPosition = (position) => Number.isNaN(position) || !Number.isInteger(position) || position < 0;
 
 /**
- * Validate if the position is valid
+ * Validate if the positions from a rover object
  * @param {Object} object
  * @param {number} [Object.x] - x position from rover
  * @param {number} [Object.y] - y position from rover
  * @returns {boolean}
  */
-export const isValidPosition = ({ x, y }) => {
+export const isRoverPositionValid = ({ x, y }) => {
   if (isInvalidPosition(x) || isInvalidPosition(y)) {
     return false;
   }
@@ -33,7 +35,37 @@ export const isOutsideFromPlateau = ({ x, y }) => {
   return false;
 };
 
+/**
+ * Format And Validate plateau Input
+ * @param {string} plateau - string input
+ * @returns {boolean}
+ */
+export const validatePlateau = (plateau) => {
+  if (!plateau.x) {
+    throw new ValidationError('Missing X position for plateau');
+  }
+  if (!plateau.y) {
+    throw new ValidationError('Missing Y position for plateau');
+  }
+  if (isInvalidPosition(plateau.x) || isInvalidPosition(plateau.y)) {
+    throw new ValidationError('Invalid plateau input');
+  }
+};
+
+/**
+ * Format And Validate plateau Input
+ * @param {string} plateau - string input
+ * @returns {boolean}
+ */
+export const formatAndValidatePlateau = (plateau) => {
+  const [x, y] = plateau.trim().split(' ');
+  const formatedPlateau = { x: parseInt(x, 10), y: parseInt(y, 10) };
+  validatePlateau(formatedPlateau);
+  return formatedPlateau;
+};
+
 export default {
-  isValidPosition,
+  isInvalidPosition,
+  isRoverPositionValid,
   isOutsideFromPlateau,
 };
