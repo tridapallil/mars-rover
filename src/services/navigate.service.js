@@ -4,6 +4,12 @@ import ValidationError from '../classes/ValidationError';
 
 global.plateau = {};
 
+/**
+ * This is the main navigate method, which process all the rovers and set the plateu value
+ * @param {Object} upperRight
+ * @param {Array} rovers
+ * @returns {Array}
+ */
 export const navigate = ({ upperRight, rovers }) => {
   try {
     const formatedPlateau = formatAndValidatePlateau(upperRight);
